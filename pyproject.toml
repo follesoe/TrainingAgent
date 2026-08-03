@@ -1,0 +1,22 @@
+[project]
+name = "training-agent"
+version = "0.1.0"
+description = "Endurance training analysis agent backed by intervals.icu data"
+readme = "README.md"
+authors = [
+    { name = "Jonas Follesø", email = "jonas@follesoe.no" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "httpx>=0.28.1",
+    "python-dotenv>=1.2.2",
+    "rich>=15.0.0",
+    "typer>=0.27.0",
+]
+
+[project.scripts]
+training-agent = "training_agent.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.10.2,<0.11.0"]
+build-backend = "uv_build"

@@ -1,0 +1,31 @@
+# Secrets - never commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+
+# Personal training data. Keep the directory, not its contents.
+data/*
+!data/.gitkeep
+
+# Activity files (fit/tcx/gpx exports) are personal data
+*.fit
+*.tcx
+*.gpx
+
+# Machine-specific Claude Code settings (contains local paths)
+.claude/settings.local.json
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+.DS_Store
+
+# Third-party prompt kept locally, not published
+bikefit/
