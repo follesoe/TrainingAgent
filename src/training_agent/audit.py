@@ -75,9 +75,7 @@ def find_duplicates(activities: list[dict[str, Any]]) -> list[Finding]:
                 if not sa or not sb:
                     continue
                 overlap = (min(sa[1], sb[1]) - max(sa[0], sb[0])).total_seconds()
-                shorter = min(
-                    (sa[1] - sa[0]).total_seconds(), (sb[1] - sb[0]).total_seconds()
-                )
+                shorter = min((sa[1] - sa[0]).total_seconds(), (sb[1] - sb[0]).total_seconds())
                 if shorter <= 0 or overlap / shorter < OVERLAP_THRESHOLD:
                     continue
 

@@ -20,3 +20,14 @@ training-agent = "training_agent.cli:main"
 [build-system]
 requires = ["uv_build>=0.10.2,<0.11.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "black>=26.5.1",
+]
+
+[tool.black]
+# The codebase was already written to ~100 columns; black's default 88 would
+# reflow files wholesale for no benefit.
+line-length = 100
+target-version = ["py313"]
