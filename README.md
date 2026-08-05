@@ -28,6 +28,27 @@ uv run training-agent report data/performance-reports/2026-07-29-baseline-assess
 
 `raw` is the exploration escape hatch — `@me` expands to the configured athlete id.
 
+### Zwift
+
+Optional. Adds route detail, scheduled meetups and Zwift's workout library.
+
+```bash
+uv run training-agent zwift route alpe          # distance, elevation, segments — offline
+uv run training-agent zwift ping                # verify login
+uv run training-agent zwift meetups --days 30   # scheduled private rides
+uv run training-agent zwift plan                # workouts on the Zwift calendar
+uv run training-agent zwift workouts --search vo2
+uv run training-agent zwift workout <uuid> --as-intervals   # → intervals.icu syntax
+```
+
+`zwift route` needs no login — route data is vendored in `reference/zwift-routes.json`
+(git-ignored; when logged in, the live catalogue from `/api/game_info` is preferred).
+Everything else needs `ZWIFT_EMAIL` / `ZWIFT_PASSWORD` in `.env`.
+
+Zwift issues no personal API keys, so this uses the unofficial game-client API and takes
+the account password, exchanging it once for a cached token. It is unsupported by Zwift
+and can break without notice. See the Zwift section in `CLAUDE.md`.
+
 ## Data availability (important)
 
 Activities that reach intervals.icu **through the Strava connection are not readable
@@ -53,7 +74,8 @@ silently treated as rest days.
 - Base URL `https://intervals.icu/api/v1`, HTTP Basic auth: user `API_KEY`, password = your key.
 - Rate limits: 5000 requests/day, 2500 per rolling 15 min, 10/sec per IP.
 - Dates are local ISO-8601 (`2026-07-29` or `2026-07-29T16:18:49`).
-- Full spec: [`reference/intervals-openapi.json`](reference/intervals-openapi.json),
+- Full spec: `reference/intervals-openapi.json` (git-ignored — regenerate with
+  `curl -s https://intervals.icu/api/v1/docs | python3 -m json.tool > reference/intervals-openapi.json`),
   live docs at <https://intervals.icu/api/v1/docs/swagger-ui/index.html>.
 
 ### Endpoints worth knowing
@@ -149,7 +171,8 @@ sport-settings entry — set it via `PUT /athlete/{id}/sport-settings/{id}`.
 src/training_agent/
   config.py      environment / secrets
   intervals.py   API client
+  zwift.py       unofficial Zwift API client, routes, .zwo parsing
   cli.py         commands
-reference/       OpenAPI spec
+reference/       OpenAPI spec + Zwift route catalogue (git-ignored, regenerable)
 data/            downloaded data and training notes (.md)
 ```

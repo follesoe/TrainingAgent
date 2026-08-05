@@ -10,6 +10,11 @@ credentials.json
 data/*
 !data/.gitkeep
 
+# Vendored third-party reference data. Large, regenerable, and not ours to
+# republish - see "Regenerating reference data" in CLAUDE.md. Keep the directory.
+reference/*
+!reference/.gitkeep
+
 # Activity files (fit/tcx/gpx exports) are personal data
 *.fit
 *.tcx
