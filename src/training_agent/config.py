@@ -35,3 +35,30 @@ class Settings:
         # "0" is the intervals.icu shorthand for "the athlete owning this key".
         athlete_id = os.getenv("INTERVALS_ATHLETE_ID", "0").strip() or "0"
         return cls(api_key=api_key, athlete_id=athlete_id)
+
+
+@dataclass(frozen=True)
+class ZwiftSettings:
+    """Zwift account credentials.
+
+    Zwift issues no personal API keys, so the unofficial API needs the account
+    password itself. See zwift.py for what that implies.
+    """
+
+    email: str
+    password: str
+
+    @classmethod
+    def load(cls) -> "ZwiftSettings":
+        load_dotenv(PROJECT_ROOT / ".env")
+
+        email = os.getenv("ZWIFT_EMAIL", "").strip()
+        password = os.getenv("ZWIFT_PASSWORD", "")
+        if not email or not password:
+            raise ConfigError(
+                "ZWIFT_EMAIL and ZWIFT_PASSWORD are not both set. Add them to .env "
+                "(see .env.example). Zwift has no personal API keys, so the unofficial "
+                "API needs the account password. Accounts that sign in only through "
+                "Apple/Google/Facebook have no password and cannot be used."
+            )
+        return cls(email=email, password=password)
