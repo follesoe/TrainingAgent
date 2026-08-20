@@ -136,6 +136,15 @@ client.update_event(event_id, {"paired_activity_id": activity_id})     # returns
 intervals.icu auto-pairs a same-day activity of matching type, so it will happily attach
 a hard interval session to an easy-run plan if that is the only plan that day. Check.
 
+### Correcting an activity's distance
+
+`PUT /activity/{id}` **silently ignores `distance`** — the response echoes the old value.
+The editable override is `icu_distance`; setting it sticks and recomputes
+`average_speed`/`pace`. Load is **not** recomputed from it: `pace_load` still comes from
+the recorded stream, so when the recording itself is wrong (Apple Watch clips treadmill
+pace to ~5:25/km), correct load separately via `icu_training_load`. Document any such
+correction with `POST /activity/{id}/messages` `{"content": ...}` so the edit is visible.
+
 ### Structured workouts
 
 Put the step syntax in the event `description`; intervals.icu parses it into
