@@ -187,18 +187,24 @@ def wellness(days: int = typer.Option(14, help="How many days back to show.")) -
         _fail(exc)
 
     table = Table(title=f"Wellness since {oldest}")
-    for col in ("Date", "Weight", "RHR", "HRV", "Sleep", "CTL", "ATL", "Form"):
-        table.add_column(col, justify="right" if col != "Date" else "left")
+    # Kept narrow enough to render in an 80-column terminal.
+    columns = ("Date", "Kg", "RHR", "HRV", "Sleep", "Sl.HR", "SpO2", "CTL", "ATL", "Form")
+    for col in columns:
+        table.add_column(col, justify="right" if col != "Date" else "left", no_wrap=True)
 
     for w in sorted(items, key=lambda x: x.get("id", "")):
         ctl, atl = w.get("ctl"), w.get("atl")
         sleep = w.get("sleepSecs")
+        # The API spells these hrvSDNN / avgSleepingHR / spO2 - not hrv / sleepingHR / spo2.
+        hrv, sleep_hr, spo2 = w.get("hrvSDNN"), w.get("avgSleepingHR"), w.get("spO2")
         table.add_row(
             str(w.get("id")),
             f"{w['weight']:.1f}" if w.get("weight") else "-",
             str(w.get("restingHR") or "-"),
-            str(w.get("hrv") or "-"),
+            f"{hrv:.0f}" if hrv else "-",
             f"{sleep / 3600:.1f}h" if sleep else "-",
+            f"{sleep_hr:.0f}" if sleep_hr else "-",
+            f"{spo2:.1f}" if spo2 else "-",
             f"{ctl:.0f}" if ctl is not None else "-",
             f"{atl:.0f}" if atl is not None else "-",
             f"{ctl - atl:+.0f}" if ctl is not None and atl is not None else "-",
