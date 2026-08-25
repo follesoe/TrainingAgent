@@ -140,10 +140,20 @@ a hard interval session to an easy-run plan if that is the only plan that day. C
 
 `PUT /activity/{id}` **silently ignores `distance`** — the response echoes the old value.
 The editable override is `icu_distance`; setting it sticks and recomputes
-`average_speed`/`pace`. Load is **not** recomputed from it: `pace_load` still comes from
-the recorded stream, so when the recording itself is wrong (Apple Watch clips treadmill
-pace to ~5:25/km), correct load separately via `icu_training_load`. Document any such
-correction with `POST /activity/{id}/messages` `{"content": ...}` so the edit is visible.
+`average_speed`/`pace`. Whether `pace_load` follows is **unreliable** — it did on two
+corrections and stayed at the old value on a third — so when the recording itself is wrong
+(Apple Watch clips treadmill pace to ~5:25/km) always set `icu_training_load` explicitly
+and read it back. `pace_zone_times` stays computed from the recorded stream and cannot be
+fixed. Document any such correction with `POST /activity/{id}/messages`
+`{"content": ...}` so the edit is visible.
+
+The run pace-load formula is plain rTSS on **average** pace, not a normalized pace:
+`load = moving_time × (avg_speed / threshold_pace)² / 36`. Verified by reproducing the
+stored load from the stream — a 30 s 4th-power "normalized pace" overshoots. `icu_intensity`
+is derived back from the *rounded* load, so it is not an independent number. Planned
+workouts use a different basis, per-step `Σ time × IF² / 36`, which weights fast reps more
+— so an interval session run exactly to plan lands *below* the plan's load number. That
+gap is the formula, not under-performance.
 
 ### Structured workouts
 
